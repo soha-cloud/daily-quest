@@ -446,6 +446,108 @@
     flex-shrink:0;
   }
   .mustdo-link:hover{background:var(--mint-dim);}
+  .mustdo-note-row{
+    padding:0 0 9px 30px;
+    border-bottom:1px solid var(--line);
+    margin-top:-2px;
+  }
+  .mustdo-note{
+    width:100%;
+    background:var(--panel-alt);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:6px;
+    padding:7px 9px;
+    font-size:13px;
+    box-sizing:border-box;
+  }
+  .hist-open-btn{
+    margin-top:10px;
+    background:var(--panel-alt);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:8px;
+    padding:8px 14px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .hist-open-btn:hover{background:var(--mint-dim);border-color:var(--mint);}
+  .hist-overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.62);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:24px 12px; z-index:1000; overflow-y:auto;
+  }
+  .hist-modal{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    width:100%; max-width:460px; padding:16px;
+  }
+  .hist-head{
+    display:flex; align-items:center; justify-content:space-between;
+    font-weight:800; font-size:16px; margin-bottom:12px;
+  }
+  .hist-close{background:none;border:none;color:var(--text);font-size:18px;cursor:pointer;}
+  .hist-list{display:flex;flex-direction:column;gap:8px;}
+  .hist-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--panel-alt); border:1px solid var(--line);
+    border-radius:10px; padding:12px; color:var(--text);
+    cursor:pointer; text-align:left; width:100%;
+  }
+  .hist-row:hover{border-color:var(--mint);}
+  .hist-date{font-weight:700;font-size:14px;}
+  .hist-meta{font-size:12px;color:var(--muted);}
+  .hist-detail-date{font-weight:800;font-size:15px;margin:6px 0 12px;}
+  .hist-sec{margin-bottom:12px;}
+  .hist-sec-t{font-size:12px;font-weight:800;color:var(--mint);margin-bottom:5px;}
+  .hist-line{font-size:13px;line-height:1.5;padding:2px 0;}
+  .hist-note{color:var(--muted);}
+  #histBack{margin-bottom:12px;}
+  .hw-card{
+    background:var(--panel-alt);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:10px;
+  }
+  .hw-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .hw-name{font-weight:700;font-size:14px;}
+  .hw-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+  .hw-target{
+    margin:8px 0;
+    padding:8px 10px;
+    background:var(--mint-dim);
+    border-radius:8px;
+    font-size:13px;
+    color:var(--text);
+  }
+  .hw-target b{color:var(--mint);font-size:15px;}
+  .hw-target.done{background:rgba(51,214,166,0.12);}
+  .hw-target.review{background:var(--orange-dim);}
+  .hw-progrow{display:flex;align-items:center;gap:8px;margin:8px 0 6px;}
+  .hw-progrow label{font-size:12px;color:var(--muted);flex-shrink:0;}
+  .hw-in{
+    width:80px;background:var(--panel);border:1px solid var(--line);
+    color:var(--text);border-radius:6px;padding:6px 8px;font-size:13px;
+  }
+  .hw-unit{font-size:12px;color:var(--muted);}
+  .hw-bar{height:7px;background:var(--panel);border-radius:4px;overflow:hidden;margin-top:6px;}
+  .hw-bar-fill{height:100%;background:var(--mint);border-radius:4px;transition:width .3s;}
+  .hw-form{
+    margin-top:10px;display:flex;flex-direction:column;gap:8px;
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:10px;padding:12px;
+  }
+  .hw-form input[type=text],.hw-form input[type=number],.hw-form input[type=date],.hw-sel{
+    background:var(--panel);border:1px solid var(--line);color:var(--text);
+    border-radius:6px;padding:8px 9px;font-size:13px;width:100%;box-sizing:border-box;
+  }
+  .hw-form-row{display:flex;gap:8px;align-items:center;}
+  .hw-datelabel{font-size:12px;color:var(--muted);flex-shrink:0;}
+  .hw-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);}
+  .hw-check input{width:18px;height:18px;accent-color:var(--mint);}
   .linkbtn{
     background:none;
     border:none;
@@ -560,7 +662,7 @@ let activeProfile = 'minhyeong';
 
 const dayTypeMap = {1:'social', 2:'science', 3:'social-compact', 4:'science', 5:'social', 6:'catchup', 0:'review'};
 function computeType(){
-  return PROFILES[activeProfile].hasSubjects ? dayTypeMap[dow] : (dow===0 ? 'review' : (dow===6 ? 'catchup' : 'simple'));
+  return PROFILES[activeProfile].hasSubjects ? dayTypeMap[dow] : 'simple';
 }
 let type = computeType();
 
@@ -586,7 +688,16 @@ function defaultSchedule(){
       "6": [ {t:'13:30 ~ 16:00', name:'책쌤'} ]
     };
   }
-  return {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]};
+  // 민형 기본 학원 시간표 (앱에서 편집 가능)
+  return {
+    "0": [],
+    "1": [],
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [ {t:'10:30 ~ 12:30', name:'과학'}, {t:'13:30 ~ 16:00', name:'책쌤'} ]
+  };
 }
 function scheduleHasAny(){
   return !!schedule && Object.keys(schedule).some(k => (schedule[k]||[]).length>0);
@@ -855,6 +966,7 @@ function defaultDay(){
     catchup: {socialCount:'', scienceCount:'', wrongSource:'', wrongStuck:'', wrongHint:'', wrongHow:'', wrongNext:'', wrongMeta:''},
     review: {good:'', bad:'', reason:'', adjust:'', socialCount:'', scienceCount:''},
     mustdo: {},
+    mustdoNote: {},
     completed:false
   };
 }
@@ -868,6 +980,7 @@ function defaultTemplate(){
       {id:'ebsmath', label:'EBS Math 개념영상 2개 보기', days:[0,1,2,3,4,5,6], url:'https://www.ebsmath.co.kr/resource/rscList?grdCd=MGRD02'},
       {id:'reading', label:'독서 30분', days:[0,1,2,3,4,5,6]},
       {id:'reading_journal', label:'독서록 (주 1회)', days:[6]},
+      {id:'exercise', label:'운동', days:[0,1,2,3,4,5,6], note:true, notePlaceholder:'어떤 운동 했는지 적기 (예: 줄넘기 100개)'},
       {id:'hwcheck', label:'내일 학원숙제 완료 확인', days:[0,1,2,3,4,5,6]}
     ];
   }
@@ -877,6 +990,7 @@ function defaultTemplate(){
     {id:'ebsmath', label:'EBS Math 개념영상 2개 보기', days:[0,1,2,3,4,5,6], url:'https://www.ebsmath.co.kr/resource/rscList?grdCd=MGRD02'},
     {id:'quizlet', label:'퀴즐렛 영어 단어 테스트', days:[1,3,5]},
     {id:'reading', label:'독서 30분', days:[0,1,2,3,4,5,6]},
+    {id:'exercise', label:'운동', days:[0,1,2,3,4,5,6], note:true, notePlaceholder:'어떤 운동 했는지 적기 (예: 줄넘기 100개)'},
     {id:'hwcheck', label:'내일 학원숙제 완료 확인', days:[0,1,2,3,4,5,6]}
   ];
 }
@@ -907,6 +1021,17 @@ let state = null;
 let streakMeta = null;
 let saveTimer = null;
 let celebrateFlag = false;
+let homeworks = [];
+let hwAddMode = false;
+
+// ---------- 학원 숙제 플래너 저장 ----------
+async function loadHomeworks(){
+  try{ const res = await store.get(pk('meta:homeworks')); return res ? JSON.parse(res.value) : []; }
+  catch(e){ return []; }
+}
+async function saveHomeworks(){
+  try{ await store.set(pk('meta:homeworks'), JSON.stringify(homeworks)); }catch(e){ console.error(e); }
+}
 
 function buildMascotSVG(streak){
   const flameScale = Math.min(1 + (streak||0) * 0.12, 2.4);
@@ -950,7 +1075,8 @@ function renderMustDo(){
       <input type="checkbox" data-mustdo="${it.id}" ${state.mustdo[it.id]?'checked':''}>
       <label>${it.label}</label>
       ${it.url ? `<a href="${it.url}" target="_blank" rel="noopener" class="mustdo-link" title="바로가기">▶</a>` : ''}
-    </div>`).join('');
+    </div>
+    ${it.note ? `<div class="mustdo-note-row"><input type="text" class="mustdo-note" data-mustdonote="${it.id}" value="${((state.mustdoNote&&state.mustdoNote[it.id])||'').replace(/"/g,'&quot;')}" placeholder="${it.notePlaceholder||''}"></div>` : ''}`).join('');
   return `
   <div class="mission">
     <div class="mission-head"><span class="mission-num">MUST-DO</span><span class="mission-title">오늘의 필수 체크리스트</span></div>
@@ -986,6 +1112,14 @@ function bindMustDoEvents(){
     cb.addEventListener('change', e=>{
       const id = cb.getAttribute('data-mustdo');
       state.mustdo[id] = e.target.checked;
+      queueSave();
+    });
+  });
+  document.querySelectorAll('[data-mustdonote]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const id = inp.getAttribute('data-mustdonote');
+      if(!state.mustdoNote) state.mustdoNote = {};
+      state.mustdoNote[id] = e.target.value;
       queueSave();
     });
   });
@@ -1346,6 +1480,224 @@ function bindReviewEvents(){
   });
 }
 
+// ---------- 지난 기록 보기 (읽기 전용) ----------
+let historyOpen = false;
+let historyDetail = null;
+let historyDays = [];
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function mustdoLabel(id){
+  const t = (template||[]).find(x=>x.id===id);
+  if(t) return t.label;
+  const m = {social_reading:'사회/국어 독해', ebsmath:'EBS Math', reading:'독서 30분', reading_journal:'독서록', hwcheck:'학원숙제 확인', kumon:'구몬 숙제', summary:'요약노트', quizlet:'퀴즐렛 영어', exercise:'운동'};
+  return m[id] || id;
+}
+async function openHistory(){
+  historyDays = [];
+  for(let i=1;i<=60;i++){
+    const d = addDays(today, -i);
+    const ds = fmt(d);
+    const rec = await loadDay(ds);
+    if(rec) historyDays.push({ds, d, rec});
+  }
+  historyOpen = true;
+  historyDetail = null;
+  await render();
+}
+function histSec(title, lines){
+  const ls = lines.filter(Boolean);
+  if(!ls.length) return '';
+  return `<div class="hist-sec"><div class="hist-sec-t">${title}</div>${ls.map(l=>`<div class="hist-line">${escapeHtml(l)}</div>`).join('')}</div>`;
+}
+function renderHistoryDetail(item){
+  if(!item) return '<div class="hint">기록을 찾을 수 없어요.</div>';
+  const r = item.rec;
+  const wd = weekdayNames[item.d.getDay()];
+  let s = `<div class="hist-detail-date">${item.d.getFullYear()}년 ${item.d.getMonth()+1}월 ${item.d.getDate()}일 (${wd}) · ${r.completed?'✅ 완료':'미완료'}</div>`;
+  const md = r.mustdo||{}, mdNote = r.mustdoNote||{};
+  const mdIds = Object.keys(md).filter(k=>md[k]);
+  if(mdIds.length){
+    s += `<div class="hist-sec"><div class="hist-sec-t">필수 체크</div>${mdIds.map(id=>`<div class="hist-line">✔ ${escapeHtml(mustdoLabel(id))}${mdNote[id]?` <span class="hist-note">— ${escapeHtml(mdNote[id])}</span>`:''}</div>`).join('')}</div>`;
+  }
+  if(mdNote.exercise && !md.exercise){
+    s += histSec('운동', [mdNote.exercise]);
+  }
+  if(r.top3 && r.top3.some(t=>t.text)){
+    s += `<div class="hist-sec"><div class="hist-sec-t">오늘의 TOP 3</div>${r.top3.filter(t=>t.text).map(t=>`<div class="hist-line">${t.done?'✅':'⬜'} ${escapeHtml(t.text)}</div>`).join('')}</div>`;
+  }
+  if(r.math){ s += histSec('수학', [r.math.problems && ('푼 문제: '+r.math.problems), r.math.questionList && ('막힌 문제: '+r.math.questionList)]); }
+  if(r.cycle){ s += histSec('예복습', [r.cycle.previewNote && ('예습: '+r.cycle.previewNote), r.cycle.r1 && ('배운 것1: '+r.cycle.r1), r.cycle.r2 && ('배운 것2: '+r.cycle.r2), r.cycle.r3 && ('배운 것3: '+r.cycle.r3)]); }
+  if(r.self){ s += histSec('Self-Check', [r.self.good && ('잘한 것: '+r.self.good), r.self.fix && ('고칠 것: '+r.self.fix)]); }
+  if(r.catchup){ s += histSec('보충', [ (r.catchup.socialCount||r.catchup.scienceCount) && (`사회 ${r.catchup.socialCount||0} · 과학 ${r.catchup.scienceCount||0}`), r.catchup.wrongSource && ('오답 출처: '+r.catchup.wrongSource), r.catchup.wrongStuck && ('막힌 부분: '+r.catchup.wrongStuck)]); }
+  if(r.review){ s += histSec('주간회고', [r.review.good && ('좋았던 점: '+r.review.good), r.review.bad && ('아쉬운 점: '+r.review.bad), r.review.reason && ('이유: '+r.review.reason), r.review.adjust && ('조정할 점: '+r.review.adjust)]); }
+  return `<div class="hist-detail">${s}</div>`;
+}
+function renderHistory(){
+  if(!historyOpen) return '';
+  let inner;
+  if(historyDetail){
+    const item = historyDays.find(x=>x.ds===historyDetail);
+    inner = `<button class="btn secondary" id="histBack">◀ 목록으로</button>${renderHistoryDetail(item)}`;
+  } else {
+    const rows = historyDays.length
+      ? historyDays.map(it=>{
+          const wd = weekdayNames[it.d.getDay()];
+          const doneCount = Object.values(it.rec.mustdo||{}).filter(Boolean).length;
+          return `<button class="hist-row" data-histday="${it.ds}">
+            <span class="hist-date">${it.d.getMonth()+1}/${it.d.getDate()} (${wd})</span>
+            <span class="hist-meta">${it.rec.completed?'✅ 완료':'미완료'} · 체크 ${doneCount}개</span>
+          </button>`;
+        }).join('')
+      : '<div class="hint">아직 저장된 지난 기록이 없어요.</div>';
+    inner = `<div class="hist-list">${rows}</div>`;
+  }
+  return `<div class="hist-overlay" id="histOverlay"><div class="hist-modal">
+    <div class="hist-head"><span>📅 ${PROFILES[activeProfile].name}의 지난 기록</span><button class="hist-close" id="histClose">✕</button></div>
+    ${inner}
+  </div></div>`;
+}
+function bindHistoryEvents(){
+  const ho = document.getElementById('histOpen');
+  if(ho) ho.addEventListener('click', openHistory);
+  const hc = document.getElementById('histClose');
+  if(hc) hc.addEventListener('click', ()=>{ historyOpen=false; historyDetail=null; render(); });
+  const hov = document.getElementById('histOverlay');
+  if(hov) hov.addEventListener('click', e=>{ if(e.target===hov){ historyOpen=false; historyDetail=null; render(); } });
+  const hb = document.getElementById('histBack');
+  if(hb) hb.addEventListener('click', ()=>{ historyDetail=null; render(); });
+  document.querySelectorAll('[data-histday]').forEach(b=>{
+    b.addEventListener('click', ()=>{ historyDetail=b.getAttribute('data-histday'); render(); });
+  });
+}
+
+// ---------- 학원 숙제 플래너 ----------
+function parseDate(ds){ const [y,m,d]=ds.split('-').map(Number); return new Date(y, m-1, d); }
+function stripTime(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function daysBetween(a,b){ return Math.round((stripTime(b)-stripTime(a))/86400000); }
+function nextClassDate(name){
+  for(let i=1;i<=14;i++){
+    const d = addDays(today, i);
+    const blocks = (schedule && schedule[String(d.getDay())]) || [];
+    if(blocks.some(b=>b.name===name)) return fmt(d);
+  }
+  return null;
+}
+function academyNames(){
+  const s = new Set();
+  Object.values(schedule||{}).forEach(a => (a||[]).forEach(b=>{ if(b.name) s.add(b.name); }));
+  return [...s];
+}
+function hwCompute(hw){
+  const total = Number(hw.total)||0;
+  const prog = hw.progress||{};
+  let done = 0; Object.keys(prog).forEach(k=>{ const v=Number(prog[k]); if(!isNaN(v)) done+=v; });
+  const todayProg = Number(prog[todayStr])||0;
+  const doneExcl = done - todayProg;
+  const remaining = Math.max(0, total-done);
+  const remainingPlan = Math.max(0, total-doneExcl);
+  let daysLeft = 1, reviewDay = null;
+  if(hw.due){
+    const dueD = parseDate(hw.due);
+    let lastSolve = addDays(dueD, -1);
+    if(hw.reviewBuffer){ reviewDay = fmt(addDays(dueD, -1)); lastSolve = addDays(dueD, -2); }
+    daysLeft = Math.max(1, daysBetween(today, lastSolve) + 1);
+  }
+  const todayTarget = remainingPlan<=0 ? 0 : Math.ceil(remainingPlan/daysLeft);
+  const met = todayTarget>0 && todayProg>=todayTarget;
+  return { total, done, remaining, daysLeft, todayTarget, reviewDay, todayProg, met };
+}
+function renderHomeworkPlanner(){
+  const cards = homeworks.map(hw=>{
+    const c = hwCompute(hw);
+    const prog = hw.progress||{};
+    const todayDone = prog[todayStr]!=null ? prog[todayStr] : '';
+    const pct = c.total ? Math.min(100, Math.round(c.done/c.total*100)) : 0;
+    let status;
+    if(c.remaining<=0){
+      status = (hw.reviewBuffer && c.reviewDay===todayStr)
+        ? `<div class="hw-target done">✅ 다 풀었어요! 오늘은 오답체크 하는 날 📝</div>`
+        : `<div class="hw-target done">✅ 숙제 다 풀었어요!</div>`;
+    } else if(c.reviewDay===todayStr){
+      status = `<div class="hw-target review">📝 오늘은 오답체크 하는 날! 남은 ${c.remaining}${escapeHtml(hw.unit)} 마무리하고 틀린 문제 확인하기</div>`;
+    } else {
+      status = `<div class="hw-target ${c.met?'done':''}">오늘 목표 <b>${c.todayTarget}${escapeHtml(hw.unit)}</b>${c.met?' ✓':''} <span class="hw-sub">· 마감까지 ${c.daysLeft}일</span></div>`;
+    }
+    return `<div class="hw-card">
+      <div class="hw-top"><span class="hw-name">📚 ${escapeHtml(hw.name)}</span><button class="delbtn" data-hwdel="${hw.id}">×</button></div>
+      ${hw.due ? `<div class="hw-sub">마감(다음 수업): ${hw.due}${hw.reviewBuffer?' · 오답체크 여유일 ✓':''}</div>` : '<div class="hw-sub">마감일 미설정</div>'}
+      ${status}
+      <div class="hw-progrow">
+        <label>오늘 푼 양</label>
+        <input type="number" min="0" class="hw-in" data-hwtoday="${hw.id}" value="${todayDone}" placeholder="0">
+        <span class="hw-unit">${escapeHtml(hw.unit)}</span>
+      </div>
+      <div class="hw-bar"><div class="hw-bar-fill" style="width:${pct}%"></div></div>
+      <div class="hw-sub">진행 ${c.done}/${c.total}${escapeHtml(hw.unit)} (${pct}%)</div>
+    </div>`;
+  }).join('');
+  const acads = academyNames();
+  const form = hwAddMode ? `
+    <div class="hw-form">
+      <input type="text" id="hwName" placeholder="숙제 이름 (예: 수학하다 숙제)">
+      <div class="hw-form-row">
+        <input type="number" id="hwTotal" min="1" placeholder="총 양 (예: 40)">
+        <input type="text" id="hwUnit" placeholder="단위" value="문제">
+      </div>
+      ${acads.length ? `<select id="hwAcademy" class="hw-sel"><option value="">학원 선택 → 다음 수업일 자동</option>${acads.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('')}</select>` : ''}
+      <div class="hw-form-row">
+        <label class="hw-datelabel">또는 마감일 직접</label>
+        <input type="date" id="hwDue" class="hw-date">
+      </div>
+      <label class="hw-check"><input type="checkbox" id="hwReview" checked> 오답체크 하루 남기기 (수학 추천)</label>
+      <button class="btn mint" id="hwAddConfirm">추가하기</button>
+    </div>` : '';
+  return `<div class="mission hw-planner">
+    <div class="mission-head"><span class="mission-num">학원 숙제 플래너</span><span class="mission-title">다음 수업까지 매일 조금씩</span></div>
+    ${cards || '<div class="hint">등록된 숙제가 없어요. 숙제 양을 입력하면 다음 수업까지 하루에 얼마씩 풀지 알려줄게요. 📚</div>'}
+    <button class="linkbtn" id="hwAddToggle">${hwAddMode?'닫기':'+ 숙제 추가'}</button>
+    ${form}
+  </div>`;
+}
+function bindHomeworkEvents(){
+  const t = document.getElementById('hwAddToggle');
+  if(t) t.addEventListener('click', ()=>{ hwAddMode=!hwAddMode; render(); });
+  document.querySelectorAll('[data-hwtoday]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const id = inp.getAttribute('data-hwtoday');
+      const hw = homeworks.find(h=>h.id===id); if(!hw) return;
+      if(!hw.progress) hw.progress = {};
+      const v = e.target.value;
+      if(v==='') delete hw.progress[todayStr]; else hw.progress[todayStr] = Number(v)||0;
+      saveHomeworks();
+    });
+    inp.addEventListener('change', ()=>{ render(); });
+  });
+  document.querySelectorAll('[data-hwdel]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = b.getAttribute('data-hwdel');
+      if(!confirm('이 숙제를 목록에서 지울까요?')) return;
+      homeworks = homeworks.filter(h=>h.id!==id);
+      saveHomeworks(); render();
+    });
+  });
+  const add = document.getElementById('hwAddConfirm');
+  if(add) add.addEventListener('click', ()=>{
+    const name = (document.getElementById('hwName').value||'').trim();
+    const total = Number(document.getElementById('hwTotal').value)||0;
+    const unit = ((document.getElementById('hwUnit').value||'').trim()) || '문제';
+    if(!name || total<=0){ alert('숙제 이름과 총 양을 입력해줘.'); return; }
+    const acadEl = document.getElementById('hwAcademy');
+    const academy = acadEl ? acadEl.value : '';
+    let due = (document.getElementById('hwDue').value||'').trim();
+    if(!due && academy) due = nextClassDate(academy) || '';
+    const reviewBuffer = document.getElementById('hwReview').checked;
+    homeworks.push({ id:'hw'+Date.now(), name, total, unit, academy, due, reviewBuffer, progress:{} });
+    hwAddMode = false; saveHomeworks(); render();
+  });
+}
+
 // ---------- main render ----------
 async function render(){
   const info = typeInfo[type];
@@ -1361,6 +1713,7 @@ async function render(){
 
   let body = '';
   if(activeProfile === 'minjun' || scheduleHasAny()){ body += renderSchedule(); }
+  body += renderHomeworkPlanner();
   body += renderMustDo() + `<hr class="court-divider">`;
   if(type==='catchup'){
     body += renderCatchup() + `
@@ -1404,12 +1757,14 @@ async function render(){
       <h1>${prof.name}의 데일리 퀘스트</h1>
       <div class="subject-badge">${info.badge}</div>
       <div class="datestr">${dateLabel}</div>
+      <button class="hist-open-btn" id="histOpen">📅 지난 기록 보기</button>
     </div>
     ${dotStripHtml}
     ${unlockHtml}
     ${renderRewardSection(weekData)}
     ${state.completed && type!=='catchup' && type!=='review' ? renderDoneBanner() : ''}
     ${body}
+    ${renderHistory()}
   `;
 
   document.querySelectorAll('[data-profile]').forEach(tab=>{
@@ -1428,6 +1783,8 @@ async function render(){
 
   bindMustDoEvents();
   bindScheduleEvents();
+  bindHomeworkEvents();
+  bindHistoryEvents();
   if(type==='catchup') bindCatchupEvents();
   else if(type==='review') bindReviewEvents();
   else bindCommonMissionEvents();
@@ -1437,11 +1794,21 @@ async function loadProfileData(){
   const loaded = await loadDay(todayStr);
   state = loaded || defaultDay();
   if(!state.mustdo) state.mustdo = {};
+  if(!state.mustdoNote) state.mustdoNote = {};
   streakMeta = await loadStreak();
   template = await loadTemplate();
   if(!template){ template = defaultTemplate(); await saveTemplate(); }
+  // 마이그레이션: 운동 항목이 없으면 추가
+  if(!template.some(t => t.id==='exercise')){
+    template.push({id:'exercise', label:'운동', days:[0,1,2,3,4,5,6], note:true, notePlaceholder:'어떤 운동 했는지 적기 (예: 줄넘기 100개)'});
+    await saveTemplate();
+  }
   schedule = await loadSchedule();
-  if(!schedule){ schedule = defaultSchedule(); await saveSchedule(); }
+  // 저장된 시간표가 없거나 완전히 비어 있으면 기본 시간표로 채움 (민형 시간표가 안 보이던 문제 해결)
+  if(!schedule || !Object.values(schedule).some(a => (a||[]).length>0)){
+    schedule = defaultSchedule(); await saveSchedule();
+  }
+  homeworks = await loadHomeworks();
   rewards = await loadRewards();
 }
 
